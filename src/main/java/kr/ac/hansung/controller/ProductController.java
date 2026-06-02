@@ -1,8 +1,12 @@
 package kr.ac.hansung.controller;
 
 import kr.ac.hansung.dto.ProductDto;
+import kr.ac.hansung.entity.Product;
 import kr.ac.hansung.service.ProductService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -15,8 +19,27 @@ public class ProductController {
     private final ProductService productService;
 
     @GetMapping
-    public String list(Model model) {
-        model.addAttribute("products", productService.findAll());
+    public String list(
+        @RequestParam(required = false) String keyword,
+        @RequestParam(defaultValue = "0") int page,
+        @RequestParam(defaultValue = "5") int size,
+        Model model) {
+
+        // URL 파라미터(page, size)로 페이지 요청 객체 생성, id 순 정렬
+        PageRequest pageRequest = PageRequest.of(page, size, Sort.by("id"));
+
+        // 빈 문자열("")을 null로 정규화
+        String normalizedKeyword = (keyword != null && !keyword.isBlank()) ? keyword : null;
+
+        Page<Product> productPage;
+        if (normalizedKeyword != null) {
+            productPage = productService.searchProducts(normalizedKeyword, pageRequest);
+        } else {
+            productPage = productService.getProducts(pageRequest);
+        }
+
+        model.addAttribute("productPage", productPage);
+        model.addAttribute("keyword", normalizedKeyword);
         return "products/list";
     }
 
