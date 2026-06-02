@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<footer th:fragment="practiceFooter" class="mt-5 py-3 bg-white border-top text-center text-muted small">
+    <div>
+        <span id="practiceDateTime">실습 수행 일시: </span>
+        <span class="mx-2">|</span>
+        <span>학번: 2071146</span>
+        <span class="mx-2">|</span>
+        <span>성명: 이정환</span>
+    </div>
+    <script>
+        function updatePracticeDateTime() {
+            const now = new Date();
+            const weekNames = ["일", "월", "화", "수", "목", "금", "토"];
+            const hour = now.getHours();
+            const ampm = hour < 12 ? "오전" : "오후";
+            const displayHour = hour % 12 === 0 ? 12 : hour % 12;
+            const text = "실습 수행 일시: "
+                + now.getFullYear() + "년 "
+                + (now.getMonth() + 1) + "월 "
+                + now.getDate() + "일 "
+                + "(" + weekNames[now.getDay()] + ") "
+                + ampm + " "
+                + String(displayHour).padStart(2, "0") + ":"
+                + String(now.getMinutes()).padStart(2, "0") + ":"
+                + String(now.getSeconds()).padStart(2, "0");
+
+            document.getElementById("practiceDateTime").textContent = text;
+        }
+
+        updatePracticeDateTime();
+        setInterval(updatePracticeDateTime, 1000);
+    </script>
+</footer>
+</body>
+</html>
